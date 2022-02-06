@@ -1,0 +1,24 @@
+{
+    "name": "au-vieux-tilleul",
+    "version": "1.0.0",
+    "description": "",
+    "browserslist": "> 0.5%, last 2 versions, not dead",
+    "scripts": {
+        "start": "parcel src/index.pug src/pages/*.pug",
+        "dev": "parcel watch src/index.pug src/pages/*.pug",
+        "build": "parcel build src/index.pug",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "Thibault Meyer",
+    "license": "MIT",
+    "dependencies": {
+        "@parcel/transformer-pug": "^2.2.0"
+    },
+    "devDependencies": {
+        "@parcel/transformer-sass": "^2.1.1",
+        "@types/jest": "^27.4.0",
+        "jest": "^27.4.7",
+        "parcel": "^2.1.1",
+        "parcel-transformer-pug": "file:packages/parcel-transformer-pug"
+    }
+}
