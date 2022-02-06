@@ -1,0 +1,12 @@
+- const translations = req('./../../../src/i18n/' + language + '.json')
+- const page = translations.index
+
+html(lang=language)
+    head
+        include ../components/head.pug
+    body
+        nav
+        main
+            h1
+                = page.body.title
+            section

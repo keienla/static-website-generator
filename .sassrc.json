@@ -1,0 +1,13 @@
+{
+    "inclidePaths": [],
+
+    "charset": true,
+    "indentType": "space",
+    "indentWidth": 4,
+    "linefeed": "lf",
+    "outputStyle": "compressed",
+
+    "verbose": false,
+
+    "sourceMap": true
+}
