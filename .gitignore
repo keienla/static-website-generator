@@ -7,7 +7,7 @@
 
 # dependencies
 /node_modules
-/packages/parcel-transformer-pug/node_modules
+/packages/**/node_modules
 
 # IDEs and editors
 /.idea
