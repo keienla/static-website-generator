@@ -1,7 +1,7 @@
 - const translations = req('./../../../src/i18n/' + language + '.json')
 - const page = translations.index
 
-html(lang=language)
+html(lang=language, dir="ltr", itemscope, itemtype="https://schema.org/WebPage", prefix="og:http://ogp.me/ns#")
     head
         include ../components/head.pug
     body

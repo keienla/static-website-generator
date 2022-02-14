@@ -1,16 +1,21 @@
 meta(charset="UTF-8")
 meta(name="viewport", content="width=device-width, initial-scale=1.0")
-meta(http-equiv="X-UA-Compatible", content="ie=edge")
-if(isIndex)
-    script(type="module", src="./ts/app.ts")
-    link(type="text/css", rel="stylesheet", href="./scss/style.scss")
-    link(rel="icon", href="./img/favicon.ico")
-else
-    script(type="module", src="./../ts/app.ts")
-    link(type="text/css", rel="stylesheet", href="./../scss/style.scss")
-    link(rel="icon", href="./../img/favicon.ico")
+
+<!-- From user -->
 title
     = page.head.title
 meta(name="description", content=page.head.description)
 meta(name="keywords", content=page.head.keywords)
+
+<!-- Global -->
+meta(http-equiv="X-UA-Compatible", content="ie=edge")
+if(isIndex)
+    script(type="module", src="./ts/app.ts")
+    link(type="text/css", rel="preload", as="style", href="./scss/style.scss")
+    link(rel="icon", href="./img/favicon.ico")
+else
+    script(type="module", src="./../ts/app.ts")
+    link(type="text/css", rel="preload", as="style", href="./../scss/style.scss")
+    link(rel="icon", href="./../img/favicon.ico")
+
 meta(name="author", content="Thibault Meyer")
