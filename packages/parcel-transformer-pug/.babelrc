@@ -1,8 +1,0 @@
-{
-    "plugins": [
-      ["@babel/plugin-transform-modules-commonjs", {
-        "exportsOnly": true,
-        "importInterop": "node",
-      }]
-    ]
-}

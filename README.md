@@ -10,6 +10,7 @@
 - [ ] Create a folder "assets" with all the images inside
 - [ ] Create types for "Pages" and "Articles"
 - [x] System for .pug generate with json file
+- [ ] Set all header/manifest/robots/sitemap with a config json file
 
 ----
 
