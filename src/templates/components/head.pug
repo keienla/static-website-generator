@@ -10,12 +10,14 @@ meta(name="keywords", content=page.head.keywords)
 <!-- Global -->
 meta(http-equiv="X-UA-Compatible", content="ie=edge")
 if(isIndex)
-    script(type="module", src="./ts/app.ts")
-    link(type="text/css", rel="preload", as="style", href="./scss/style.scss")
+    script(type="module", src="./script/app.ts")
+    link(type="text/css", rel="preload", as="style", href="./style/style.scss")
+    link(type="text/css", rel="stylesheet", href="./style/style.scss")
     link(rel="icon", href="./img/favicon.ico")
 else
-    script(type="module", src="./../ts/app.ts")
-    link(type="text/css", rel="preload", as="style", href="./../scss/style.scss")
+    script(type="module", src="./../script/app.ts")
+    link(type="text/css", rel="preload", as="style", href="./../style/style.scss")
+    link(type="text/css", rel="stylesheet", href="./../style/style.scss")
     link(rel="icon", href="./../img/favicon.ico")
 
 meta(name="author", content="Thibault Meyer")
