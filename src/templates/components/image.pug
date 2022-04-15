@@ -1,0 +1,6 @@
+mixin image(params)
+    picture
+        if params.alternatives && params.alternatives.length
+            each alternative in params.alternatives
+                source(srcset=alternative.srcset, media=alternative.media, type=alternative.type)
+        img(src=params.src, alt=params.alt[language])

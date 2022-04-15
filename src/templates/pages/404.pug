@@ -1,8 +1,8 @@
-include ../components/image.pug
 <!DOCTYPE html>
 html(lang=language, dir=dir, itemscope, itemtype="https://schema.org/WebPage", prefix="og:http://ogp.me/ns#")
     head
         include ../components/head.pug
+        meta(http-equiv="refresh", content="10;URL=./")
     body.animate-in
         header
             h1
@@ -10,7 +10,6 @@ html(lang=language, dir=dir, itemscope, itemtype="https://schema.org/WebPage", p
             nav
         main
             section
-                //- +image(page.images.nebuleuse)
         footer
             p
                 = page.footer.createdBy[language]

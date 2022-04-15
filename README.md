@@ -4,19 +4,24 @@
 
 ### Website
 
-- [ ] Create a folder "content" at "./" with inside
-    - a folder "pages" with all pages by folder. The page will be a JSON file and for each entry the translation for the languages
-    - a folder "articles", same than pages but for blog. Will have a structure != than page. Still header, translation... but the content will just be some paragraph
-- [ ] Create a folder "assets" with all the images inside
-- [ ] Create types for "Pages" and "Articles"
+- [x] Folder "pages" with all the pages typed and translations possible
+- [x] Create a folder "assets" with all the images inside
+- [x] Create types for "Pages"
 - [x] System for .pug generate with json file
-- [ ] Set all header/manifest/robots/sitemap with a config json file
+- [ ] Create a simple start page
+- [x] config
+- - [x] header
+- - [x] manifest
+- - [x] robots
+- - [x] sitemap
+- - [x] service worker
+- - [x] Site map -> make option to say how ofter a page is update
+- [ ] Others
+- - [ ] Google Analytics (with option in config to desactivate it)
+- - [ ] RGPD Google Analytics
+- - [ ] Microsoft/Facebook/Twitter/iOS/Antroid header Tags
 
 ----
-
-### Admin (if have time)
-
-- [ ] Create some page to not have to create/edit the jsons file in folder "content". Pages must be static if possible
 
 ----
 
