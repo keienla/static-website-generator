@@ -1,4 +1,4 @@
-const { folders, config } = require('./gulp/utils')
+const { folders, config, clean } = require('./gulp/utils')
 const { src, parallel, watch, series } = require('gulp')
 
 const webserver = require('gulp-webserver')
@@ -13,6 +13,10 @@ const generateViews = require('./gulp/views')
 const generateManifest = require('./gulp/manifest')
 const generateSW = require('./gulp/sw')
 
+function _cleanAll() {
+    return clean(folders.dist.default)
+}
+
 exports['build:fonts'] = moveFonts
 exports['build:robot'] = createRobot
 exports['build:ts'] = generateScript
@@ -23,7 +27,7 @@ exports['build:views'] = generateViews
 exports['build:manifest'] = generateManifest
 exports['build:sw'] = generateSW
 
-const building = series(parallel(
+const building = series(_cleanAll, parallel(
     generateStyle,
     generateScript,
     generateViews,

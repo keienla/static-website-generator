@@ -67,7 +67,7 @@ function _compileViews() {
                 // else error with rename
                     .pipe(wait(100))
                     .pipe(pug({
-                        doctype: 'html',
+                        doctype: '',
                         pretty: false,
                         locals: {
                             page,

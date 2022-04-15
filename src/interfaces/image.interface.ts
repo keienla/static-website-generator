@@ -1,3 +1,5 @@
+export type SrcImage = `/assets/img/${string}`|`http://${string}`|`https://${string}`|`data:image/${string}`
+
 /**
  * The interface for alternatives images
  */
@@ -21,7 +23,7 @@ interface AlternativeIImage {
      * It's the url to get the image if this alternative is selected
      * @type {`/assets/img/${string}`|`http://${string}`|`https://${string}`}
      */
-    srcset: `/assets/img/${string}`|`http://${string}`|`https://${string}`
+    srcset: SrcImage
 }
 
 /**
@@ -44,7 +46,7 @@ export interface IImage {
      * // if external = true
      * https://other-website.com/my-image.jpg
      */
-    src: `/assets/img/${string}`|`http://${string}`|`https://${string}`
+    src: SrcImage
 
     /**
      * The alternatives images for this picture
