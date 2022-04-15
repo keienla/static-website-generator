@@ -14,6 +14,7 @@ function _compileStyle() {
         // compile to CSS
         .pipe(gulpSass({
             outputStyle: 'compressed',
+            includePaths: ["./node_modules"]
             // fiber: Fiber
         }).on('error', gulpSass.logError))
         // write sourcemaps

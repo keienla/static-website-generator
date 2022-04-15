@@ -1,0 +1,14 @@
+@use '@keienla/platypass/colors' with (
+    $colors: (
+        primary: (
+            light: #f5f5f5,
+            dark: #333,
+            contrast: (
+                light: #333,
+                dark: #f5f5f5
+            )
+        )
+    )
+);
+
+@forward '@keienla/platypass/css-vars';
