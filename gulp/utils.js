@@ -101,7 +101,7 @@ function log() {
 /**
  * @param  {number} timer
  */
-async function wait(timer) {
+function wait(timer) {
     return through.obj(async (file, enc, cb) => {
         setTimeout(() => {
             return cb(null, file)

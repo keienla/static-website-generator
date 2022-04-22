@@ -48,14 +48,14 @@ exports['build:views:js'] = viewsJS
 const views = series(viewsJS, cleanViews, generateViews)
 exports['build:views'] = views
 
-async function _fnWait() {
+function _fnWait() {
     return src('./gulpfile.js').pipe(wait(1000))
 }
 
 const building = series(
     _cleanAll,
     generateJSViews,
-    _fnWait,
+    // _fnWait,
     parallel(
         moveFonts,
         generateImages,

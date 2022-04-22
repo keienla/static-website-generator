@@ -20,11 +20,11 @@ function _getPathTemplate(name, paths) {
     return null
 }
 
-async function _cleanJSViews() {
+function _cleanJSViews() {
     return clean(folders.tmp.pages)
 }
 
-async function _cleanViews() {
+function _cleanViews() {
     const languages = config.languages.filter(language => {
         const lang = typeof language.lang === 'string' ? language.lang : language
         return lang !== config.defaultLanguage
@@ -35,7 +35,7 @@ async function _cleanViews() {
     ])
 }
 
-async function _generateJSViews(cb) {
+function _generateJSViews(cb) {
     return src(`${folders.pages}/**/*.ts`, {allowEmpty: true, since: lastRun(_generateJSViews)})
         // compile to JS
         .pipe(tsProject()).js

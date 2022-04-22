@@ -12,7 +12,7 @@ function _cleanSW() {
     ])
 }
 
-async function _generateSWRegister(next) {
+function _generateSWRegister(next) {
     if(!config.https) {
         console.warn('Must be HTTPS to register service worker')
         return next()
@@ -30,7 +30,7 @@ async function _generateSWRegister(next) {
     fs.writeFileSync(`${folders.dist.default}/${REGISTER_NAME}`, code)
 }
 
-async function _generateSWCode(next) {
+function _generateSWCode(next) {
     if(!config.https) {
         console.warn('Must be HTTPS to register service worker')
         return next()
