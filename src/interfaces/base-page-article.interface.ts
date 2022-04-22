@@ -53,6 +53,18 @@ export interface IBasePageArticle {
     "_noindex"?: boolean      // If the robots can index the page
 
     /**
+     * The text to the link to the content of the page
+     * @type {Translation}
+     */
+    "main_content_link": Translation
+
+    /**
+     * The list of the links for navigation in the page
+     * @type {{href: string, label: Translation}[]}
+     */
+    "navigation": {href: Translation, label: Translation}[]
+
+    /**
      * General informations of the page.
      * This will used to set the title, description and keywords meta tags
      */

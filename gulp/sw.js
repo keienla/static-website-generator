@@ -1,5 +1,5 @@
 const { clean, folders, config, mkdir, getPathFiles, getFileName } = require("./utils")
-const { series } = require('gulp')
+const { series, parallel } = require('gulp')
 const fs = require('fs')
 
 const REGISTER_NAME = 'sw-register.js'
@@ -12,7 +12,7 @@ function _cleanSW() {
     ])
 }
 
-async function _createSwRegister(next) {
+async function _generateSWRegister(next) {
     if(!config.https) {
         console.warn('Must be HTTPS to register service worker')
         return next()
@@ -30,7 +30,7 @@ async function _createSwRegister(next) {
     fs.writeFileSync(`${folders.dist.default}/${REGISTER_NAME}`, code)
 }
 
-async function _createSw(next) {
+async function _generateSWCode(next) {
     if(!config.https) {
         console.warn('Must be HTTPS to register service worker')
         return next()
@@ -100,4 +100,7 @@ self?.addEventListener('activate', event => {
     fs.writeFileSync(`${folders.dist.default}/${SW_NAME}`, code)
 }
 
-module.exports = series(_cleanSW, _createSw, _createSwRegister)
+module.exports = {
+    cleanSW: _cleanSW,
+    generateSW: parallel(_generateSWRegister, _generateSWCode)
+}

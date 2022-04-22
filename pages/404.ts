@@ -1,9 +1,12 @@
 import { I404Page } from './../src/interfaces/404.interface';
+import PageCommon from './page-common.js'
 
 const Page404: I404Page = {
+    ...PageCommon,
     "_template": "404",
     "_nofollow": true,
     "_noindex": true,
+
     "head": {
         "title": {
             "fr": "404",

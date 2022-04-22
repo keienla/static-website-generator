@@ -2,11 +2,11 @@ const { clean, folders, findFollowedNofollowedPages, baseUrl, mkdir } = require(
 const { series } = require('gulp')
 const fs = require('fs')
 
-function _cleanRobot() {
+function _cleanRobots() {
     return clean(`${folders.dist.default}/robots.txt`)
 }
 
-async function _createRobot() {
+async function _generateRobots() {
     const {nofollowedPages, noindexedPages} = await findFollowedNofollowedPages()
     // To noindex have to use meta(name="robots") and don't put the element in the robots.txt file
     // ? https://developers.google.com/search/docs/advanced/crawling/block-indexing
@@ -22,4 +22,7 @@ Sitemap: ${baseUrl}/sitemap.xml`
     fs.writeFileSync(`${folders.dist.default}/robots.txt`, robotContent)
 }
 
-module.exports = series(_cleanRobot, _createRobot)
+module.exports = {
+    cleanRobots: _cleanRobots,
+    generateRobots: _generateRobots
+}

@@ -1,14 +1,14 @@
 const { clean, folders } = require("./utils");
-const { src, dest, series } = require('gulp')
+const { src, dest, series, lastRun } = require('gulp')
 const gulpSass = require('gulp-dart-sass')
 gulpSass.compiler = require('sass')
 const sourcemaps = require('gulp-sourcemaps')
 
-function _cleanDistStyleFolder() {
+function _cleanStyles() {
     return clean(folders.dist.style)
 }
-function _compileStyle() {
-    return src(`${folders.src.style}/*.scss`)
+function _generateStyles() {
+    return src(`${folders.src.style}/*.scss`, {allowEmpty: true, since: lastRun(_generateStyles)})
         // init the sourcemaps
         .pipe(sourcemaps.init())
         // compile to CSS
@@ -23,4 +23,7 @@ function _compileStyle() {
         .pipe(dest(folders.dist.style))
 }
 
-module.exports = series(_cleanDistStyleFolder, _compileStyle);
+module.exports = {
+    cleanStyles: _cleanStyles,
+    generateStyles: _generateStyles
+}

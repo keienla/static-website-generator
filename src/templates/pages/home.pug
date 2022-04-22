@@ -5,10 +5,17 @@ html(lang=language, dir=dir, itemscope, itemtype="https://schema.org/WebPage", p
         include ../components/head.pug
     body.animate-in
         header
+            a(href="#main-content", class="main-content-link")
+                = page.main_content_link
+            nav
+                ul(role="list")
+                    each link in page.navigation
+                        li
+                            a(href=link.href[language], title=link.label[language], itemprop="url")
+                                = link.label[language]
             h1
                 != page.content.title[language]
-            nav
-        main
+        main(id="main-content")
             section
                 //- +image(page.images.nebuleuse)
         footer

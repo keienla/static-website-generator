@@ -6,7 +6,7 @@ function _cleanManifest() {
     return clean(`${folders.dist.default}/**/manifest.json`)
 }
 
-async function _createManifest() {
+async function _generateManifest() {
     config.languages.forEach(language => {
         const lang = typeof language.lang === 'string' ? language.lang : language
         const isDefault = lang === config.defaultLanguage
@@ -36,4 +36,7 @@ async function _createManifest() {
     })
 }
 
-module.exports = series(_cleanManifest, _createManifest)
+module.exports = {
+    cleanManifest: _cleanManifest,
+    generateManifest: _generateManifest
+}

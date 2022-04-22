@@ -1,4 +1,4 @@
-const { src, dest, series } = require('gulp')
+const { src, dest } = require('gulp')
 const { clean, folders } = require("./utils")
 
 function _cleanFonts() {
@@ -9,4 +9,7 @@ function _moveFonts() {
         .pipe(dest(folders.dist.fonts))
 }
 
-module.exports = series(_cleanFonts, _moveFonts)
+module.exports = {
+    cleanFonts: _cleanFonts,
+    moveFonts: _moveFonts
+}

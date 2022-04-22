@@ -1,16 +1,16 @@
 const { clean, folders } = require("./utils");
-const { src, dest, series } = require('gulp')
+const { src, dest } = require('gulp')
 const sourcemaps = require('gulp-sourcemaps')
 const ts = require('gulp-typescript')
-const tsProject = ts.createProject('./../tsconfig.json')
+const tsProject = ts.createProject('./tsconfig.json')
 const uglify = require('gulp-uglify')
 
-function _cleanDistScriptFolder() {
+function _cleanScripts() {
     return clean(folders.dist.script)
 }
 
-function _compileScript() {
-    return src(`${folders.src.script}/*.ts`)
+function _generateScripts() {
+    return src(`${folders.src.script}/**/*.ts`)
         // init the sourcemaps
         .pipe(sourcemaps.init({loadMaps: true}))
         // compile to JS
@@ -22,4 +22,7 @@ function _compileScript() {
         .pipe(dest(folders.dist.script))
 }
 
-module.exports = series(_cleanDistScriptFolder, _compileScript);
+module.exports = {
+    cleanScripts: _cleanScripts,
+    generateScripts: _generateScripts
+}

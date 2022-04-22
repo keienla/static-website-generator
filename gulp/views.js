@@ -1,9 +1,13 @@
-const { clean, config, constructPageUrl, folders, getFileName, getPathFiles, readTSFile, baseUrl } = require('./utils')
-const { src, dest, series, parallel } = require('gulp')
+const { clean, config, constructPageUrl, folders, getPathFiles, baseUrl } = require('./utils')
+const { src, dest, lastRun } = require('gulp')
 const replace = require('gulp-replace')
 const rename = require('gulp-rename')
-const wait = require('gulp-wait')
 const pug = require('gulp-pug')
+const ts = require('gulp-typescript')
+const merge = require('gulp-merge')
+const clone = require('gulp-clone')
+const tsProject = ts.createProject(__dirname +  '/../pages/tsconfig.json')
+const through = require('through2');
 
 function _getPathTemplate(name, paths) {
     if(!paths?.length || !name) return null
@@ -16,94 +20,102 @@ function _getPathTemplate(name, paths) {
     return null
 }
 
-async function _cleanDistViews() {
+async function _cleanJSViews() {
+    return clean(folders.tmp.pages)
+}
+
+async function _cleanViews() {
     const languages = config.languages.filter(language => {
         const lang = typeof language.lang === 'string' ? language.lang : language
         return lang !== config.defaultLanguage
     })
-    return clean([...languages.map(language => `${folders.dist.default}/${language}`), `${folders.dist.default}/*.html`])
+    return clean([
+        ...languages.map(language => `${folders.dist.default}/${language}`),
+        `${folders.dist.default}/*.html`
+    ])
 }
 
-const dataPages = getPathFiles(folders.pages, '.ts')
-const templates = getPathFiles(folders.src.views, '.pug')
+async function _generateJSViews(cb) {
+    return src(`${folders.pages}/**/*.ts`, {allowEmpty: true, since: lastRun(_generateJSViews)})
+        // compile to JS
+        .pipe(tsProject()).js
+        .pipe(dest(folders.tmp.pages))
+}
 
-function _compileViews() {
-    const transformations = dataPages.reduce((acc, viewPath) => {
-        const actions = []
+async function _generateViews(next) {
+    const entries = src(`${folders.tmp.pages}/**/*.js`, {allowEmpty: true, since: lastRun(_generateViews)})
 
-        config.languages.forEach(language => {
-            const currentLang = typeof language.lang === 'string' ? language.lang : language
-            const {name} = getFileName(viewPath)
+    const actions = config.languages.map(language => {
+        return entries
+            .pipe(clone())
+            .pipe(_generateView(language))
+    })
 
-            const fileName = (currentLang === config.defaultLanguage ? '' : currentLang + '/') + name + '.html'
-            const url = constructPageUrl(currentLang, name)
+    if(actions.length)
+        return merge(...actions)
 
-            const alternatesPages = config.languages.map(language => {
-                const lang = typeof language.lang === 'string' ? language.lang : language
-                return {
-                    hreflang: lang === config.defaultLanguage ? 'x-default' : lang,
-                    href: constructPageUrl(lang, name),
-                }
-            })
+    next()
+}
 
-            actions.push(function _compileView(next) {
-                // Transpile the .ts to js and get the data
-                const page = readTSFile(viewPath)
+function _generateView(language) {
+    return through.obj(async (file, enc, cb) => {
+        const currentLang = typeof language.lang === 'string' ? language.lang : language
+        const name = file.stem
 
-                if(!page || !page._template) {
-                    console.error('No template for page ' + viewPath)
-                    return next()
-                }
+        const fileName = (currentLang === config.defaultLanguage ? '' : currentLang + '/') + name + '.html'
+        const url = constructPageUrl(currentLang, name)
 
-                const pugPath = _getPathTemplate(page._template + '.pug', templates)
-
-                if(!pugPath) {
-                    console.error('No pug template "' + page._template + '" for page ' + viewPath + ' in ' + folders.src.views)
-                    return next()
-                }
-
-                return src(pugPath, {allowEmpty: true})
-                // wait to be sure that dist files are deleted
-                // else error with rename
-                    .pipe(wait(100))
-                    .pipe(pug({
-                        doctype: '',
-                        pretty: false,
-                        locals: {
-                            page,
-                            language: currentLang,
-                            dir: language.dir ? language.dir : 'ltr',
-                            alternates: alternatesPages,
-                            baseUrl,
-                            url,
-                            config,
-                        },
-                        cache: true
-                    }))
-                    .pipe(replace(/\.s[ac]ss/g, '.css', {}))
-                    .pipe(replace(/\.tsx?/g, '.js'))
-                    .pipe(rename(fileName))
-                    .pipe(dest(folders.dist.default))
-            })
+        const alternatesPages = config.languages.map(language => {
+            const lang = typeof language.lang === 'string' ? language.lang : language
+            return {
+                hreflang: lang === config.defaultLanguage ? 'x-default' : lang,
+                href: constructPageUrl(lang, name),
+            }
         })
 
-        if(actions.length) {
-            return [...acc, ...actions]
+        const page = (await require(file.path))?.default
+
+        if(!page || !page._template) {
+            console.info('No template for page ' + file.path)
+            return cb()
         }
 
-        return acc
-    }, [])
+        const templates = getPathFiles(folders.src.views, '.pug')
 
-    if(!transformations.length) {
-        return [async function _noPage() {}]
-    }
+        const pugPath = _getPathTemplate(page._template + '.pug', templates)
 
-    return transformations
+        if(!pugPath) {
+            console.warn('No pug template "' + page._template + '" for page ' + file.path + ' in ' + folders.src.views)
+            return cb()
+        }
+
+        src(pugPath, {allowEmpty: true})
+            .pipe(pug({
+                doctype: '',
+                pretty: false,
+                locals: {
+                    page,
+                    language: currentLang,
+                    dir: language.dir ? language.dir : 'ltr',
+                    alternates: alternatesPages,
+                    baseUrl,
+                    url,
+                    config,
+                },
+                cache: true
+            }))
+            .pipe(replace(/\.s[ac]ss/g, '.css', {}))
+            .pipe(replace(/\.tsx?/g, '.js'))
+            .pipe(rename(fileName))
+            .pipe(dest(folders.dist.default))
+
+        return cb(null, file)
+    })
 }
 
-module.exports = series(
-    _cleanDistViews,
-    parallel(
-        ..._compileViews()
-    )
-)
+module.exports = {
+    cleanJSViews: _cleanJSViews,
+    cleanViews: _cleanViews,
+    generateJSViews: _generateJSViews,
+    generateViews: _generateViews
+}

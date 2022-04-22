@@ -6,7 +6,7 @@ function _cleanSitemap() {
     return clean(`${folders.dist.default}/sitemap.xml`)
 }
 
-async function _createSitemap() {
+async function _generateSitemap() {
     const followedPages = (await findFollowedNofollowedPages()).followedPages.map(({url, data, name, src}) => {
         let response = '<url>'
         // Set Url
@@ -46,4 +46,7 @@ ${followedPages.join('\n')}
     fs.writeFileSync(`${folders.dist.default}/sitemap.xml`, sitemapContent)
 }
 
-module.exports = series(_cleanSitemap, _createSitemap)
+module.exports = {
+    cleanSitemap: _cleanSitemap,
+    generateSitemap: _generateSitemap
+}

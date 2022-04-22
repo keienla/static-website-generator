@@ -1,15 +1,15 @@
 const { clean, folders } = require("./utils");
-const { src, dest, series } = require('gulp')
+const { src, dest, series, lastRun } = require('gulp')
 const gulpImageMin = import('gulp-imagemin')
 const webp = require('gulp-webp')
 
-function _cleanCompressed() {
+function _cleanImages() {
     return clean(folders.dist.images)
 }
 // transform images to webp
 const imageFormat = 'jpg,jpeg,png';
 function _transformToWebPImages() {
-    return src(`${folders.src.images}/**/*.{${imageFormat}}`)
+    return src(`${folders.src.images}/**/*.{${imageFormat}}`,  {allowEmpty: true, since: lastRun(_transformToWebPImages)})
         .pipe(webp())
         .pipe(dest(folders.dist.images))
 }
@@ -27,4 +27,7 @@ async function _compressImages() {
         .pipe(dest(folders.dist.images))
 }
 
-module.exports = series(_cleanCompressed, _transformToWebPImages, _moveImages, _compressImages);
+module.exports = {
+    cleanImages: _cleanImages,
+    generateImages: series(_transformToWebPImages, _moveImages, _compressImages)
+}

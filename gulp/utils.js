@@ -4,6 +4,7 @@ const fs = require('fs')
 
 const { src } = require('gulp')
 const gulpClean = require('gulp-clean')
+const through = require('through2');
 
 const folders = {
     src: {
@@ -24,6 +25,10 @@ const folders = {
         get fonts() { return `${this.default}/assets/fonts` },
     },
     pages: './pages',
+    tmp: {
+        default: './tmp',
+        get pages() { return `${this.default}/pages` },
+    }
 }
 
 /**
@@ -68,12 +73,41 @@ function clean(srcPath) {
     return src(srcPath, { read: false, allowEmpty: true }).pipe(gulpClean({force: true}))
 }
 
-// export function replaceContent(newContent) {
-//     return through.obj((file, enc, cb) => {
-//         file.contents = Buffer.from(newContent)
-//         return cb(null, file)
-//     })
-// }
+function replaceContent(newContent) {
+    return through.obj((file, enc, cb) => {
+        file.contents = Buffer.from(newContent)
+        return cb(null, file)
+    })
+}
+
+function log() {
+    return through.obj(async (file, enc, cb) => {
+        console.log({
+            contents: file.contents.toString(),
+            stat: file.stat,
+            base: file.base,
+            path: file.path,
+            relative: file.relative,
+            basename: file.basename,
+            extname: file.extname,
+            stem: file.stem,
+            dirname: file.dirname,
+            history: file.history,
+        })
+        return cb(null, file)
+    })
+}
+
+/**
+ * @param  {number} timer
+ */
+async function wait(timer) {
+    return through.obj(async (file, enc, cb) => {
+        setTimeout(() => {
+            return cb(null, file)
+        }, timer)
+    })
+}
 
 /**
  * @param  {string} folder
@@ -110,7 +144,7 @@ function getPathFiles(folder, extension) {
 }
 
 async function findFollowedNofollowedPages() {
-    const pagesPath = await getPathFiles(folders.pages, '.ts')
+    const pagesPath = getPathFiles(folders.tmp.pages, '.js')
     const followedPages = []
     const nofollowedPages = []
     const noindexedPages = []
@@ -124,7 +158,11 @@ async function findFollowedNofollowedPages() {
     }
 
     for(const page of pagesPath) {
-        const pageData = readTSFile(page)
+        const vpFromGulp = new RegExp('^' + folders.tmp.pages, 'g').test(page) ? './..' + page.slice(1) : page
+        const pageData = (await require(vpFromGulp))?.default
+
+        if(!pageData._template) continue;
+
         const nofollowed = pageData._nofollow || false
         const noindexed = pageData._noindex || false
 
@@ -162,5 +200,8 @@ module.exports = {
     clean,
     getPathFiles,
     findFollowedNofollowedPages,
-    mkdir
+    mkdir,
+    log,
+    replaceContent,
+    wait
 }
