@@ -1,14 +1,26 @@
-const { clean, findFollowedNofollowedPages, folders, config, constructPageUrl, mkdir, baseUrl } = require("./utils")
-const fs = require('fs')
-const { series } = require('gulp')
+import { clean, findFollowedNofollowedPages, folders, constructPageUrl, mkdir, baseUrl } from './utils'
+import * as fs from 'fs'
+import config from '../config'
 
-function _cleanSitemap() {
+/**
+ * Clean the sitemap from the dist folder
+ * @returns NodeJS.ReadWriteStream
+ */
+export function cleanSitemap(): NodeJS.ReadWriteStream {
     return clean(`${folders.dist.default}/sitemap.xml`)
 }
 
-async function _generateSitemap() {
+/**
+ * Generate the sitemap
+ * @returns Promise<void>
+ */
+export async function generateSitemap(next): Promise<void> {
+    if(config.disableSitemap) {
+        return next()
+    }
+
     const followedPages = (await findFollowedNofollowedPages()).followedPages.map(({url, data, name, src}) => {
-        let response = '<url>'
+        let response: string = '<url>'
         // Set Url
         response += `<loc>${url}</loc>`
         // Set lastmod
@@ -31,7 +43,7 @@ async function _generateSitemap() {
         }
         // Set Alternate urls
         response += config.languages.map(language => {
-            const lang = typeof language.lang === 'string' ? language.lang : language
+            const lang = typeof language === 'string' ? language : language.lang
             return `<xhtml:link rel="alternate" hreflang="${lang}" href="${constructPageUrl(lang, name)}" />`
         }).join('\n')
         response += '</url>'
@@ -44,9 +56,4 @@ ${followedPages.join('\n')}
 </urlset>`
     mkdir(folders.dist.default)
     fs.writeFileSync(`${folders.dist.default}/sitemap.xml`, sitemapContent)
-}
-
-module.exports = {
-    cleanSitemap: _cleanSitemap,
-    generateSitemap: _generateSitemap
 }

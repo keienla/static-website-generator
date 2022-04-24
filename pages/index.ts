@@ -1,5 +1,5 @@
 import { IHomePage } from './../src/interfaces/home.interface';
-import PageCommon from './page-common.js'
+import PageCommon from './page-common'
 
 const HomePage: IHomePage = {
     ...PageCommon,

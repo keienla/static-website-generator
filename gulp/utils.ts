@@ -1,12 +1,12 @@
-const path = require('path')
-const typescript = require('typescript')
-const fs = require('fs')
+import * as path from 'path'
+import * as fs from 'fs'
 
-const { src } = require('gulp')
-const gulpClean = require('gulp-clean')
-const through = require('through2');
+import { src } from 'gulp'
+import gulpClean from 'gulp-clean'
+import * as through from 'through2'
+import config from './../config'
 
-const folders = {
+export const folders = {
     src: {
         default: './src',
         get views() { return `${this.default}/templates` },
@@ -25,29 +25,16 @@ const folders = {
         get fonts() { return `${this.default}/assets/fonts` },
     },
     pages: './pages',
-    tmp: {
-        default: './tmp',
-        get pages() { return `${this.default}/pages` },
-    }
 }
 
-/**
- * @param  {string} srcPath
- */
-function readTSFile(srcPath) {
-    return eval(typescript.transpile(fs.readFileSync(srcPath, 'utf8').toString()))
-}
-
-const config = readTSFile('./config.ts')
-
-const baseUrl = `http${config.https ? 's' : ''}://${config.prefix ? config.prefix + '.' : ''}${config.domain}${config.port ? ':' + config.port : ''}`
+export const baseUrl = `http${config.https ? 's' : ''}://${config.prefix ? config.prefix + '.' : ''}${config.domain}${config.port ? ':' + config.port : ''}`
 
 /**
  * Extract filename, extension and filename + '.' + extension from a path
  * @param  {string} path
  * @returns {name: string, extension: string, full: string}
  */
-function getFileName(srcPath) {
+export function getFileName(srcPath: string): {name: string, extension: string, full: string} {
     const full = path.basename(srcPath)
     const nameDotSplitted = path.basename(srcPath).split('.')
     const name = nameDotSplitted.slice(0, nameDotSplitted.length - 1).join('.')
@@ -61,7 +48,7 @@ function getFileName(srcPath) {
  * @param  {string} name
  * @returns {string}
  */
-function constructPageUrl(language, name) {
+export function constructPageUrl(language: string, name: string): string {
     return `${baseUrl}/${language === config.defaultLanguage ? '' : language + '/'}${name === 'index' ? '' : name + '.html'}`
 }
 
@@ -69,18 +56,27 @@ function constructPageUrl(language, name) {
  * A folder or file to delete
  * @param  {string|string[]} srcPath
  */
-function clean(srcPath) {
+export function clean(srcPath: string|string[]): NodeJS.ReadWriteStream {
     return src(srcPath, { read: false, allowEmpty: true }).pipe(gulpClean({force: true}))
 }
 
-function replaceContent(newContent) {
+/**
+ * Replace the content of a file by new content given
+ * @param  {string} newContent
+ * @returns {NodeJS.ReadWriteStream}
+ */
+export function replaceContent(newContent: string): NodeJS.ReadWriteStream {
     return through.obj((file, enc, cb) => {
         file.contents = Buffer.from(newContent)
         return cb(null, file)
     })
 }
 
-function log() {
+/**
+ * Log the info of the stream
+ * @returns {NodeJS.ReadWriteStream}
+ */
+export function log(): NodeJS.ReadWriteStream {
     return through.obj(async (file, enc, cb) => {
         console.log({
             contents: file.contents.toString(),
@@ -99,42 +95,26 @@ function log() {
 }
 
 /**
- * @param  {number} timer
- */
-function wait(timer) {
-    return through.obj(async (file, enc, cb) => {
-        setTimeout(() => {
-            return cb(null, file)
-        }, timer)
-    })
-}
-
-/**
  * @param  {string} folder
  * @param  {string} extension
  */
-function getPathFiles(folder, extension) {
+export function getPathFiles(folder: string, extension: string): string[] {
     try {
         const stats = fs.statSync(folder)
 
         if(stats.isDirectory()) {
             const els = fs.readdirSync(folder)
             if(els.length) {
-                const response = els.reduce((acc, fileFolder) => {
+                const response = els.reduce<string[]>((acc, fileFolder) => {
                     const filePaths = getPathFiles(folder + '/' + fileFolder, extension)
-                    if(Array.isArray(filePaths)) {
-                        return [...acc, ...filePaths]
-                    } else if(filePaths) {
-                        return [...acc, filePaths]
-                    }
-                    return acc
+                    return [...acc, ...filePaths]
                 }, [])
                 return response
             }
         } else if(stats.isFile()) {
             const fileExtension = path.extname(folder);
             if(fileExtension === extension || !extension) {
-                return folder
+                return [folder]
             }
         }
         return []
@@ -143,37 +123,48 @@ function getPathFiles(folder, extension) {
     }
 }
 
-async function findFollowedNofollowedPages() {
-    const pagesPath = getPathFiles(folders.tmp.pages, '.js')
-    const followedPages = []
-    const nofollowedPages = []
-    const noindexedPages = []
+type TFollowedNoFollowedPage = {
+    name: string
+    lang: string
+    data: any
+    url: string
+    src: string
+}
 
-    function add(arr, page, data) {
+export async function findFollowedNofollowedPages(): Promise<{followedPages: TFollowedNoFollowedPage[], nofollowedPages: TFollowedNoFollowedPage[], noindexedPages: TFollowedNoFollowedPage[]}> {
+    const pagesPath = getPathFiles(folders.pages, '.ts')
+    const followedPages: TFollowedNoFollowedPage[] = []
+    const nofollowedPages: TFollowedNoFollowedPage[] = []
+    const noindexedPages: TFollowedNoFollowedPage[] = []
+
+    function add(arr: TFollowedNoFollowedPage[], page: string, data: any) {
         config.languages.forEach(language => {
-            const lang = typeof language.lang === 'string' ? language.lang : language
+            const lang = typeof language === 'string' ? language : language.lang
             const name = getFileName(page).name
             arr.push({name, lang, data, url: constructPageUrl(lang, name), src: page})
         })
     }
 
     for(const page of pagesPath) {
-        const vpFromGulp = new RegExp('^' + folders.tmp.pages, 'g').test(page) ? './..' + page.slice(1) : page
-        const pageData = (await require(vpFromGulp))?.default
+        try {
+            const pageData = (await require('./.' + page))
 
-        if(!pageData._template) continue;
+            if(!pageData._template) continue;
 
-        const nofollowed = pageData._nofollow || false
-        const noindexed = pageData._noindex || false
+            const nofollowed: boolean = pageData._nofollow || false
+            const noindexed: boolean = pageData._noindex || false
 
-        if(nofollowed) {
-            add(nofollowedPages, page, pageData)
-        } else {
-            add(followedPages, page, pageData)
-        }
+            if(nofollowed) {
+                add(nofollowedPages, page, pageData)
+            } else {
+                add(followedPages, page, pageData)
+            }
 
-        if(noindexed) {
-            add(noindexedPages, page, pageData)
+            if(noindexed) {
+                add(noindexedPages, page, pageData)
+            }
+        } catch(err) {
+            continue
         }
     }
 
@@ -183,25 +174,10 @@ async function findFollowedNofollowedPages() {
 /**
  * Check if there is srcPath, if not create the folder
  * @param  {string} srcPath
+ * @returns void
  */
-function mkdir(srcPath) {
+export function mkdir(srcPath): void {
     const exist = fs.existsSync(srcPath)
     if(exist) return void 0
     fs.mkdirSync(srcPath)
-}
-
-module.exports = {
-    folders,
-    readTSFile,
-    config,
-    baseUrl,
-    getFileName,
-    constructPageUrl,
-    clean,
-    getPathFiles,
-    findFollowedNofollowedPages,
-    mkdir,
-    log,
-    replaceContent,
-    wait
 }

@@ -1,5 +1,5 @@
 import { I404Page } from './../src/interfaces/404.interface';
-import PageCommon from './page-common.js'
+import PageCommon from './page-common'
 
 const Page404: I404Page = {
     ...PageCommon,

@@ -1,32 +1,37 @@
-const { clean, config, constructPageUrl, folders, getPathFiles, baseUrl } = require('./utils')
-const { src, dest, lastRun } = require('gulp')
-const replace = require('gulp-replace')
-const rename = require('gulp-rename')
-const pug = require('gulp-pug')
-const ts = require('gulp-typescript')
-const merge = require('gulp-merge')
-const clone = require('gulp-clone')
-const tsProject = ts.createProject(__dirname +  '/../pages/tsconfig.json')
-const through = require('through2');
+import config from "../config"
+import { clean, constructPageUrl, folders, getPathFiles, baseUrl } from './utils'
+import { src, dest, lastRun } from 'gulp'
+import replace from 'gulp-replace'
+import rename from 'gulp-rename'
+import pug from 'gulp-pug'
+import merge from 'gulp-merge'
+import clone from 'gulp-clone'
+import through from 'through2'
+import { AdvancedLanguages, Languages } from "../src/interfaces/translation.interface"
 
-function _getPathTemplate(name, paths) {
+/**
+ * @param  {string} name
+ * @param  {string[]} paths
+ * @returns string | null
+ */
+function _getPathTemplate(name: string, paths: string[]): string | null {
     if(!paths?.length || !name) return null
 
     for(let i = 0; i < paths.length; i++) {
-        const pathSplitted = paths[i].split('/')
+        const pathSplitted: string[] = paths[i].split('/')
         if(pathSplitted[pathSplitted.length - 1] === name) return paths[i]
     }
 
     return null
 }
 
-function _cleanJSViews() {
-    return clean(folders.tmp.pages)
-}
-
-function _cleanViews() {
+/**
+ * Clean all the HTML files in the dist folder
+ * @returns NodeJS.ReadWriteStream
+ */
+export function cleanViews(): NodeJS.ReadWriteStream {
     const languages = config.languages.filter(language => {
-        const lang = typeof language.lang === 'string' ? language.lang : language
+        const lang: string = typeof language === 'string' ? language : language.lang
         return lang !== config.defaultLanguage
     })
     return clean([
@@ -35,15 +40,8 @@ function _cleanViews() {
     ])
 }
 
-function _generateJSViews(cb) {
-    return src(`${folders.pages}/**/*.ts`, {allowEmpty: true, since: lastRun(_generateJSViews)})
-        // compile to JS
-        .pipe(tsProject()).js
-        .pipe(dest(folders.tmp.pages))
-}
-
-async function _generateViews(next) {
-    const entries = src(`${folders.tmp.pages}/**/*.js`, {allowEmpty: true, since: lastRun(_generateViews)})
+export async function generateViews(next: any): Promise<any> {
+    const entries = src(`${folders.pages}/**/*.ts`, {allowEmpty: true, since: lastRun(generateViews)})
 
     const actions = config.languages.map(language => {
         return entries
@@ -57,16 +55,16 @@ async function _generateViews(next) {
     next()
 }
 
-function _generateView(language) {
+function _generateView(language: Languages | AdvancedLanguages) {
     return through.obj(async (file, enc, cb) => {
-        const currentLang = typeof language.lang === 'string' ? language.lang : language
+        const currentLang = typeof language === 'string' ? language : language.lang
         const name = file.stem
 
         const fileName = (currentLang === config.defaultLanguage ? '' : currentLang + '/') + name + '.html'
         const url = constructPageUrl(currentLang, name)
 
         const alternatesPages = config.languages.map(language => {
-            const lang = typeof language.lang === 'string' ? language.lang : language
+            const lang = typeof language === 'string' ? language : language.lang
             return {
                 hreflang: lang === config.defaultLanguage ? 'x-default' : lang,
                 href: constructPageUrl(lang, name),
@@ -96,14 +94,14 @@ function _generateView(language) {
                 locals: {
                     page,
                     language: currentLang,
-                    dir: language.dir ? language.dir : 'ltr',
+                    dir: typeof language === 'string' ? 'ltr' : language.dir,
                     alternates: alternatesPages,
                     baseUrl,
                     url,
                     config,
                 },
                 cache: true
-            }))
+            } as any))
             .pipe(replace(/\.s[ac]ss/g, '.css', {}))
             .pipe(replace(/\.tsx?/g, '.js'))
             .pipe(rename(fileName))
@@ -111,11 +109,4 @@ function _generateView(language) {
 
         return cb(null, file)
     })
-}
-
-module.exports = {
-    cleanJSViews: _cleanJSViews,
-    cleanViews: _cleanViews,
-    generateJSViews: _generateJSViews,
-    generateViews: _generateViews
 }
