@@ -1,5 +1,5 @@
 import config from "../config"
-import { clean, constructPageUrl, folders, getPathFiles, baseUrl } from './utils'
+import { clean, constructPageUrl, folders, getPathFiles, baseUrl, getFileName } from './utils'
 import { src, dest, lastRun } from 'gulp'
 import replace from 'gulp-replace'
 import rename from 'gulp-rename'
@@ -41,7 +41,7 @@ export function cleanViews(): NodeJS.ReadWriteStream {
 }
 
 export async function generateViews(next: any): Promise<any> {
-    const entries = src(`${folders.pages}/**/*.ts`, {allowEmpty: true, since: lastRun(generateViews)})
+    const entries = src(`${folders.pages}/**/*.ts`, {allowEmpty: true/*, since: lastRun(generateViews)*/})
 
     const actions = config.languages.map(language => {
         return entries
@@ -93,7 +93,11 @@ function _generateView(language: Languages | AdvancedLanguages) {
                 pretty: false,
                 locals: {
                     page,
+                    currentPageName: getFileName(fileName).name + '.' + getFileName(fileName).extension,
                     language: currentLang,
+                    languages: config.languages.map(l => typeof l === 'string' ? l : l.lang),
+                    defaultLanguage: config.defaultLanguage,
+                    isDefaultLanguage: currentLang === config.defaultLanguage,
                     dir: typeof language === 'string' ? 'ltr' : language.dir,
                     alternates: alternatesPages,
                     baseUrl,

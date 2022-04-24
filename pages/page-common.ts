@@ -1,6 +1,6 @@
 import { IBasePageArticle } from './../src/interfaces/base-page-article.interface';
 
-const PageCommon: Pick<IBasePageArticle, 'main_content_link' | 'navigation'> = {
+const PageCommon: Pick<IBasePageArticle, 'main_content_link' | 'navigation' | 'language_navigation'> = {
     main_content_link: {
         en: 'Main content',
         fr: 'Contenu principal',
@@ -8,16 +8,31 @@ const PageCommon: Pick<IBasePageArticle, 'main_content_link' | 'navigation'> = {
 
     navigation: [
         {
-            href: {
-                en: './en/index.html',
-                fr: './index.html',
-            },
+            href: '/',
             label: {
                 en: 'Home',
                 fr: 'Accueil',
             }
+        },
+        {
+            href: '/404.html',
+            label: {
+                en: '404',
+                fr: '404',
+            }
         }
-    ]
+    ],
+
+    'language_navigation': {
+        en: {
+            en: 'English',
+            fr: 'Anglais',
+        },
+        fr: {
+            en: 'French',
+            fr: 'Français',
+        }
+    }
 }
 
 export default PageCommon;

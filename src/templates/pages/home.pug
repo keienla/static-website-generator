@@ -1,4 +1,5 @@
 include ../components/image.pug
+include ../components/navigation.pug
 <!DOCTYPE html>
 html(lang=language, dir=dir, itemscope, itemtype="https://schema.org/WebPage", prefix="og:http://ogp.me/ns#")
     head
@@ -6,13 +7,9 @@ html(lang=language, dir=dir, itemscope, itemtype="https://schema.org/WebPage", p
     body.animate-in
         header
             a(href="#main-content", class="main-content-link")
-                = page.main_content_link
-            nav
-                ul(role="list")
-                    each link in page.navigation
-                        li
-                            a(href=link.href[language], title=link.label[language], itemprop="url")
-                                = link.label[language]
+                = page.main_content_link[language]
+            +navigation(page.navigation, isDefaultLanguage, language)
+            +switch-language(languages, language, defaultLanguage, page.language_navigation, currentPageName)
             h1
                 != page.content.title[language]
         main(id="main-content")

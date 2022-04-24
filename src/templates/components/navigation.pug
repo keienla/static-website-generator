@@ -1,0 +1,16 @@
+mixin navigation(nav, isDefaultLanguage, language)
+    nav
+        ul(role="list")
+            each link in nav
+                li
+                    a(href=(isDefaultLanguage ? '' : '/' + language) + link.href, title=link.label[language], itemprop="url")
+                        = link.label[language]
+
+mixin switch-language(languages, currentLanguage, defaultLanguage, translations, currentPageName)
+    nav
+        ul(role="list")
+            each language in languages
+                if language !== currentLanguage
+                    li
+                        a(href=(language === defaultLanguage ? '/' : '/' + language + '/') + currentPageName, title=language[currentLanguage], itemprop="url")
+                            = translations[language][currentLanguage]

@@ -1,5 +1,5 @@
 import { IImage } from "./image.interface"
-import { Translation } from "./translation.interface"
+import { Languages, Translation } from "./translation.interface"
 
 /**
  * The default interface of a page
@@ -62,7 +62,12 @@ export interface IBasePageArticle {
      * The list of the links for navigation in the page
      * @type {{href: string, label: Translation}[]}
      */
-    "navigation": {href: Translation, label: Translation}[]
+    "navigation": {href: `/${string}.html` | '/', label: Translation}[]
+
+    /**
+     * The list of the languages to switch inside the page
+     */
+    "language_navigation": Record<Languages, Translation>
 
     /**
      * General informations of the page.
