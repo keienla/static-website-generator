@@ -1,6 +1,6 @@
 import config from "../config"
 import { clean, constructPageUrl, folders, getPathFiles, baseUrl, getFileName } from './utils'
-import { src, dest, lastRun } from 'gulp'
+import { src, dest } from 'gulp'
 import replace from 'gulp-replace'
 import rename from 'gulp-rename'
 import pug from 'gulp-pug'
@@ -41,7 +41,7 @@ export function cleanViews(): NodeJS.ReadWriteStream {
 }
 
 export async function generateViews(next: any): Promise<any> {
-    const entries = src(`${folders.pages}/**/*.ts`, {allowEmpty: true/*, since: lastRun(generateViews)*/})
+    const entries = src(`${folders.pages}/**/*.ts`, {allowEmpty: true})
 
     const actions = config.languages.map(language => {
         return entries

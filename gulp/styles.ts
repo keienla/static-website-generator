@@ -1,5 +1,5 @@
 import { clean, folders } from './utils'
-import { src, dest, lastRun } from 'gulp'
+import { src, dest } from 'gulp'
 import purgecss from 'gulp-purgecss'
 const gulpSass = require('gulp-sass')
 import * as dartSass from 'sass'
@@ -21,7 +21,7 @@ export function cleanStyles(): NodeJS.ReadWriteStream {
  * @returns NodeJS.ReadWriteStream
  */
 export function generateStyles(): NodeJS.ReadWriteStream {
-    return src(`${folders.src.style}/*.scss`, {allowEmpty: true, since: lastRun(generateStyles)})
+    return src(`${folders.src.style}/*.scss`, {allowEmpty: true})
         // init the sourcemaps
         .pipe(sourcemaps.init())
         // compile to CSS

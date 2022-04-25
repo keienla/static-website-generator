@@ -1,5 +1,5 @@
 import { clean, folders } from './utils'
-import { src, dest, lastRun } from 'gulp'
+import { src, dest } from 'gulp'
 import sourcemaps from 'gulp-sourcemaps'
 const uglify = require('gulp-uglify')
 import typescript from 'typescript'
@@ -40,7 +40,7 @@ export function cleanScripts(): NodeJS.ReadWriteStream {
  * @returns NodeJS.ReadWriteStream
  */
 export function generateScripts(): NodeJS.ReadWriteStream {
-    return src(`${folders.src.script}/**/*.ts`, {allowEmpty: true, since: lastRun(generateScripts)})
+    return src(`${folders.src.script}/**/*.ts`, {allowEmpty: true})
         // init the sourcemaps
         .pipe(sourcemaps.init({loadMaps: true}))
         // compile to JS

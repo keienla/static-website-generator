@@ -1,5 +1,5 @@
 import { clean, folders } from './utils'
-import { src, dest, series, lastRun, TaskFunction } from 'gulp'
+import { src, dest, series, TaskFunction } from 'gulp'
 import gulpImageMin from 'gulp-imagemin'
 import webp from 'gulp-webp'
 
@@ -18,7 +18,7 @@ export function cleanImages(): NodeJS.ReadWriteStream {
  * @returns NodeJS.ReadWriteStream
  */
 function _transformToWebPImages(): NodeJS.ReadWriteStream {
-    return src(`${folders.src.images}/**/*.{${IMAGES_FORMATS}}`,  {allowEmpty: true, since: lastRun(_transformToWebPImages)})
+    return src(`${folders.src.images}/**/*.{${IMAGES_FORMATS}}`,  {allowEmpty: true})
         .pipe(webp())
         .pipe(dest(folders.dist.images))
 }
