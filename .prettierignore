@@ -10,9 +10,4 @@ package.json
 patch.js
 
 #ignore assets
-apps/inside-web/src/assets
-apps/inside-dashboard/src/assets
-apps/inside-dashboard/src/app/documents/services/constants/error-mappings.ts
-apps/excel-add-in/src/assets
-apps/demo-app/src/assets
-shared-assets
+assets
