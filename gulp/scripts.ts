@@ -22,6 +22,7 @@ function transpile(): NodeJS.ReadWriteStream {
     return through.obj(async (file, enc, cb) => {
         const content = typescript.transpile(file.contents.toString(), tsconfig.compilerOptions || {})
         file.contents = Buffer.from(content, enc)
+        file.extname = '.js'
         return cb(null, file)
     })
 }
