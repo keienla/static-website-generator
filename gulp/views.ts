@@ -39,7 +39,7 @@ export function cleanViews(): NodeJS.ReadWriteStream {
     ])
 }
 
-export async function generateViews(next: any): Promise<any> {
+export function generateViews(next: any): void {
     const entries = src(`${folders.pages}/**/*.ts`, {allowEmpty: true})
 
     const actions = config.languages.map(language => {
@@ -49,9 +49,9 @@ export async function generateViews(next: any): Promise<any> {
     })
 
     if(actions.length)
-        return merge(...actions)
-
-    next()
+        merge(...actions).on('end', next)
+    else
+        next()
 }
 
 function _generateView(language: Languages | AdvancedLanguages) {
@@ -72,6 +72,8 @@ function _generateView(language: Languages | AdvancedLanguages) {
         })
 
         const page = (await require(file.path))?.default
+        // Remove the cache of the page to refresh when update the file
+        delete require.cache[file.path]
 
         if(!page || !page._template) {
             console.info('No template for page ' + file.path)
