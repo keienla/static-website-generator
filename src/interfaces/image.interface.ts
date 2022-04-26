@@ -1,3 +1,5 @@
+import { Translation } from "./translation.interface"
+
 export type SrcImage = `/assets/img/${string}`|`http://${string}`|`https://${string}`|`data:image/${string}`
 
 /**
@@ -33,9 +35,9 @@ export interface IImage {
     /**
      * The description of the image
      * A good description is good for SEO
-     * @type {Record<string, string>}
+     * @type {Translation}
      */
-    alt: Record<string, string>
+    alt: Translation
 
     /**
      * The default link of the image

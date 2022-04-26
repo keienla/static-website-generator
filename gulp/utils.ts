@@ -48,8 +48,8 @@ export function getFileName(srcPath: string): {name: string, extension: string, 
  * @param  {string} name
  * @returns {string}
  */
-export function constructPageUrl(language: string, name: string): string {
-    return `${baseUrl}/${language === config.defaultLanguage ? '' : language + '/'}${name === 'index' ? '' : name + '.html'}`
+export function constructPageUrl(language: string, name: string, fileFolders: '/' | `/${string}/` = '/'): string {
+    return `${baseUrl}${language === config.defaultLanguage ? '' : '/' + language}${fileFolders}${name === 'index' ? '' : name + '.html'}`
 }
 
 /**

@@ -67,7 +67,7 @@ export interface IBasePageArticle {
     /**
      * The list of the languages to switch inside the page
      */
-    "language_navigation": Record<Languages, Translation>
+    "language_navigation": Record<Languages, { label: string, flag: IImage }>
 
     /**
      * General informations of the page.

@@ -35,8 +35,7 @@ export function cleanViews(): NodeJS.ReadWriteStream {
         return lang !== config.defaultLanguage
     })
     return clean([
-        ...languages.map(language => `${folders.dist.default}/${language}`),
-        `${folders.dist.default}/*.html`
+        `${folders.dist.default}/**/*.html`
     ])
 }
 
@@ -60,14 +59,15 @@ function _generateView(language: Languages | AdvancedLanguages) {
         const currentLang = typeof language === 'string' ? language : language.lang
         const name = file.stem
 
-        const fileName = (currentLang === config.defaultLanguage ? '' : currentLang + '/') + name + '.html'
-        const url = constructPageUrl(currentLang, name)
+        let fileFolder: '/' | `/${string}/` = (file.dirname.replace(file.base, '').replace(/\\/g, '/') + '/') as '/' | `/${string}/`
+        const fileName = (currentLang === config.defaultLanguage ? '' : currentLang) + fileFolder + name + '.html'
+        const url = constructPageUrl(currentLang, name, fileFolder)
 
         const alternatesPages = config.languages.map(language => {
             const lang = typeof language === 'string' ? language : language.lang
             return {
                 hreflang: lang === config.defaultLanguage ? 'x-default' : lang,
-                href: constructPageUrl(lang, name),
+                href: constructPageUrl(lang, name, fileFolder),
             }
         })
 
@@ -93,6 +93,7 @@ function _generateView(language: Languages | AdvancedLanguages) {
                 pretty: false,
                 locals: {
                     page,
+                    currentPageFolder: fileFolder,
                     currentPageName: getFileName(fileName).name + '.' + getFileName(fileName).extension,
                     language: currentLang,
                     languages: config.languages.map(l => typeof l === 'string' ? l : l.lang),

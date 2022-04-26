@@ -6,11 +6,12 @@ mixin navigation(nav, isDefaultLanguage, language)
                     a(href=(isDefaultLanguage ? '' : '/' + language) + link.href, title=link.label[language], itemprop="url")
                         = link.label[language]
 
-mixin switch-language(languages, currentLanguage, defaultLanguage, translations, currentPageName)
+mixin switch-language(languages, currentLanguage, defaultLanguage, translations, currentPageName, currentPageFolder)
     nav
         ul(role="list")
             each language in languages
                 if language !== currentLanguage
                     li
-                        a(href=(language === defaultLanguage ? '/' : '/' + language + '/') + currentPageName, title=language[currentLanguage], itemprop="url")
-                            = translations[language][currentLanguage]
+                        a(href=(language === defaultLanguage ? '' : '/' + language) + currentPageFolder + currentPageName, title=language[currentLanguage], itemprop="url")
+                            img(src=translations[language].flag.src, alt="", aria-hidden="true", itemprop="image")
+                            = translations[language].label

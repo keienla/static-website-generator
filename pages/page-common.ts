@@ -25,12 +25,24 @@ const PageCommon: Pick<IBasePageArticle, 'main_content_link' | 'navigation' | 'l
 
     'language_navigation': {
         en: {
-            en: 'English',
-            fr: 'Anglais',
+            label: 'English',
+            flag: {
+                alt: {
+                    'en': '',
+                    'fr': '',
+                },
+                src: '/assets/img/flags/en.svg',
+            }
         },
         fr: {
-            en: 'French',
-            fr: 'Français',
+            label: 'Français',
+            flag: {
+                alt: {
+                    'en': '',
+                    'fr': '',
+                },
+                src: '/assets/img/flags/fr.svg',
+            }
         }
     }
 }

@@ -9,7 +9,7 @@ html(lang=language, dir=dir, itemscope, itemtype="https://schema.org/WebPage", p
             a(href="#main-content", class="main-content-link")
                 = page.main_content_link[language]
             +navigation(page.navigation, isDefaultLanguage, language)
-            +switch-language(languages, language, defaultLanguage, page.language_navigation, currentPageName)
+            +switch-language(languages, language, defaultLanguage, page.language_navigation, currentPageName, currentPageFolder)
             h1
                 != page.content.title[language]
         main(id="main-content")
