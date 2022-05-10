@@ -4,8 +4,8 @@ html(lang=language, dir=dir, itemscope, itemtype="https://schema.org/WebPage", p
     head
         include ../components/head.pug
         meta(http-equiv="refresh", content="10;URL=./")
-    body.animate-in
-        header
+    body
+        header.main-header
             a(href="#main-content", class="main-content-link")
                 = page.main_content_link[language]
             +navigation(page.navigation, isDefaultLanguage, language)
@@ -14,7 +14,7 @@ html(lang=language, dir=dir, itemscope, itemtype="https://schema.org/WebPage", p
                 != page.content.title[language]
         main
             section
-        footer
+        footer.main-footer
             p
                 = page.footer.createdBy[language]
                 a(href="https://github.com/keienla", target="_blank") Thibault Meyer

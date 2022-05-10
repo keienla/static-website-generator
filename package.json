@@ -14,7 +14,7 @@
     },
     "license": "WTFPL",
     "devDependencies": {
-        "@keienla/platypass": "git+https://github.com/keienla/platypass.git",
+        "@keienla/platypass": "github:keienla/platypass",
         "@types/gulp": "^4.0.9",
         "@types/gulp-imagemin": "^7.0.1",
         "@types/gulp-pug": "^4.0.0",

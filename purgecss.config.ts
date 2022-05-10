@@ -11,5 +11,5 @@ export default {
     defaultExtractor: (content) =>
         // default is /[a-zA-Z0-9_-]+/g
         // add ([a-zA-Z0-9_-]+\:)? at start to get all the class that are like spacename:name-of-class
-        content.match(/([a-zA-Z0-9_-]+\:)?[a-zA-Z0-9_-]+/g) || [],
+        content.match(/(([a-zA-Z0-9_-]+\:)|\:)?[a-zA-Z0-9_-]+/g) || [],
 }

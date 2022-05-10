@@ -31,7 +31,7 @@ const PageCommon: Pick<IBasePageArticle, 'main_content_link' | 'navigation' | 'l
                     'en': '',
                     'fr': '',
                 },
-                src: '/assets/img/flags/en.svg',
+                src: '/assets/img/flags/gb.svg',
             }
         },
         fr: {

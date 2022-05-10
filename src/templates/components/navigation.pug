@@ -1,5 +1,5 @@
 mixin navigation(nav, isDefaultLanguage, language)
-    nav
+    nav.primary-nav
         ul(role="list")
             each link in nav
                 li
@@ -7,11 +7,12 @@ mixin navigation(nav, isDefaultLanguage, language)
                         = link.label[language]
 
 mixin switch-language(languages, currentLanguage, defaultLanguage, translations, currentPageName, currentPageFolder)
-    nav
+    nav.language-nav
         ul(role="list")
             each language in languages
                 if language !== currentLanguage
                     li
                         a(href=(language === defaultLanguage ? '' : '/' + language) + currentPageFolder + currentPageName, title=language[currentLanguage], itemprop="url")
                             img(src=translations[language].flag.src, alt="", aria-hidden="true", itemprop="image")
-                            = translations[language].label
+                            span
+                                = translations[language].label
