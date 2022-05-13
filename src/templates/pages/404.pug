@@ -4,7 +4,7 @@ html(lang=language, dir=dir, itemscope, itemtype="https://schema.org/WebPage", p
     head
         include ../components/head.pug
         meta(http-equiv="refresh", content="10;URL=./")
-    body
+    body(data-template="404")
         header.main-header
             a(href="#main-content", class="main-content-link")
                 = page.main_content_link[language]

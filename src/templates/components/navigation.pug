@@ -3,7 +3,7 @@ mixin navigation(nav, isDefaultLanguage, language)
         ul(role="list")
             each link in nav
                 li
-                    a(href=(isDefaultLanguage ? '' : '/' + language) + link.href, title=link.label[language], itemprop="url")
+                    a(href=(isDefaultLanguage ? '' : '/' + language) + link.href, title=link.label[language], itemprop="url", target-template=link.targetTemplate)
                         = link.label[language]
 
 mixin switch-language(languages, currentLanguage, defaultLanguage, translations, currentPageName, currentPageFolder)
