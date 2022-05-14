@@ -1,6 +1,7 @@
 import { TransitionFnIn, TransitionFnOut, TransitionType } from './interfaces/transitions.js'
 import {
     getCurrentURL,
+    getParsedHTML,
     getTargetTemplateName,
     getTemplateName,
     isSameOrigin,
@@ -8,7 +9,8 @@ import {
     transformToURL,
 } from './util.js'
 
-const CACHE: Record<string, Promise<Response>> = {}
+const FETCHING: Record<string, Promise<Response>> = {}
+const CACHE: Record<string, string> = {}
 
 let links: HTMLAnchorElement[] = []
 
@@ -63,7 +65,7 @@ export function setTransition(
 export function goToPage(url: URL | null, template?: string, event?: MouseEvent) {
     const currentURL = getCurrentURL()
 
-    if (isSameOrigin(url, currentURL)) {
+    if (isSameOrigin(url, currentURL) && (event ? !(event.metaKey || event.ctrlKey) : true)) {
         if (event) {
             event.preventDefault()
             event.stopPropagation()
@@ -87,11 +89,8 @@ function clickLink(event: MouseEvent) {
     if (!!a) {
         const aURL = transformToURL(a.getAttribute('href'))
         const targetTemplate: string = getTargetTemplateName(a)
-        const aTarget = a.getAttribute('target')
 
-        if (aTarget !== '_blank') {
-            goToPage(aURL, targetTemplate, event)
-        }
+        goToPage(aURL, targetTemplate, event)
     }
 }
 
@@ -124,12 +123,14 @@ function changePage({ state }: { state?: { template?: string } }) {
 
     // TODO HERE see how to do the animations/loading/updating content
 
-    CACHE[window.location.href]
-        .then((response) => {
-            console.log(response)
+    loadPage(getCurrentURL())
+        .then((html) => {
+            const newDocument = getParsedHTML(html)
+            console.log({ newDocument })
         })
-        .catch((err) => {})
-    const currentURL: URL = new URL(window.location.href)
+        .catch((err) => {
+            console.error(err)
+        })
 }
 
 /**
@@ -137,18 +138,35 @@ function changePage({ state }: { state?: { template?: string } }) {
  * @param  {URL|null} url
  * @returns Promise<Response>
  */
-function loadPage(url: URL | null): Promise<Response> {
-    if (!url) return Promise.reject()
-    if (url.href in CACHE) return CACHE[url.href]
+function loadPage(url: URL | null): Promise<string> {
+    return new Promise<string>(async (resolve, reject) => {
+        if (!url) return reject()
+        if (url.href in CACHE) return resolve(CACHE[url.href])
+        if (url.href in FETCHING) {
+            await FETCHING[url.href]
+            return resolve(CACHE[url.href])
+        }
 
-    CACHE[url.href] = fetch(url.href, {
-        mode: 'same-origin',
-        method: 'GET',
-        headers: { 'X-Requested-With': 'self-navigation' },
-        credentials: 'same-origin',
+        FETCHING[url.href] = fetch(url.href, {
+            mode: 'same-origin',
+            method: 'GET',
+            headers: { 'X-Requested-With': 'self-navigation' },
+            credentials: 'same-origin',
+        })
+
+        FETCHING[url.href]
+            .then(async (response) => {
+                const content = await response.text()
+                if (response.status >= 200 && response.status < 300) {
+                    CACHE[url.href] = content
+                }
+                delete FETCHING[url.href]
+                return resolve(content)
+            })
+            .catch((err) => {
+                return reject(err)
+            })
     })
-
-    return CACHE[url.href]
 }
 
 /**
@@ -162,7 +180,7 @@ function selectLinksAndAddEvents() {
         link.removeEventListener('mouseenter', enterLink)
     })
 
-    links = Array.from(document.querySelectorAll('a'))
+    links = Array.from(document.querySelectorAll('a:not([target]):not([data-flow-disabled])'))
 
     if (links) {
         links.forEach((link) => {

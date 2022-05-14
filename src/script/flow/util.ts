@@ -14,22 +14,23 @@ export function getParsedHTML(html: string): Document {
 
 /**
  * Extract the template name of the given document if there is one
- * To add one add 'data-template' attribute with a value to the body
+ * To add one add 'data-flow-template' attribute with a value to the body
  * @param  {Document} html
  * @returns string
  */
 export function getTemplateName(html: Document): string | null {
-    return html.body.getAttribute('data-template') || null
+    return html.body.getAttribute('data-flow-template') || null
 }
 
 /**
- * Check if the given HTMLElement have the 'target-template' attribute
+ * Check if the given HTMLElement have the 'data-flow-target-template' attribute
  * If true return it's value
  * @param  {HTMLElement|null} el
  * @returns string
  */
 export function getTargetTemplateName(el: HTMLElement | null): string {
-    if (el && el.hasAttribute('target-template')) return el.getAttribute('target-template') || ''
+    if (el && el.hasAttribute('data-flow-target-template'))
+        return el.getAttribute('data-flow-target-template') || ''
     return ''
 }
 
