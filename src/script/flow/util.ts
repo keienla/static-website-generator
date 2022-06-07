@@ -8,8 +8,22 @@ const DOM_PARSER: DOMParser = new window.DOMParser()
  * @param  {string} html
  * @returns Document
  */
-export function getParsedHTML(html: string): Document {
-    return DOM_PARSER.parseFromString(html, 'text/html')
+export function getParsedHTML(html: string | Document): Document {
+    if (typeof html === 'string') return DOM_PARSER.parseFromString(html, 'text/html')
+    return html
+}
+
+/**
+ * Get the content
+ * i.e the element with param data-flow-content
+ * if no exist return body
+ * @param  {Document} document
+ * @returns HTMLElement
+ */
+export function getContent(document: Document, attr: 'data' | 'body' = 'data'): HTMLElement {
+    return attr === 'data'
+        ? document.querySelector('[data-flow-content]') || document.body
+        : document.body
 }
 
 /**
@@ -92,4 +106,15 @@ export function isSamePath(url1: URL | null, url2: URL | null): boolean {
  */
 export function isURL(url: URL | null): url is URL {
     return !!url && url instanceof URL
+}
+
+/**
+ * Find the direct A or A parent if exist of a given HTMLElement
+ * @param  {HTMLElement} el
+ * @returns HTMLElement
+ */
+export function findTargetLink(el: HTMLElement): HTMLElement | null {
+    if (el.tagName === 'A') return el
+    if (el.parentElement) return findTargetLink(el.parentElement)
+    return null
 }
