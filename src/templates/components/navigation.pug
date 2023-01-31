@@ -1,0 +1,18 @@
+mixin navigation(nav, isDefaultLanguage, language)
+    nav.primary-nav
+        ul(role="list")
+            each link in nav
+                li
+                    a(href=(isDefaultLanguage ? '' : '/' + language) + link.href, title=link.label[language], itemprop="url", data-flow-target-template=link.targetTemplate)
+                        = link.label[language]
+
+mixin switch-language(languages, currentLanguage, defaultLanguage, translations, currentPageName, currentPageFolder)
+    nav.language-nav
+        ul(role="list")
+            each language in languages
+                if language !== currentLanguage
+                    li
+                        a(href=(language === defaultLanguage ? '' : '/' + language) + currentPageFolder + (currentPageName === 'index.html' ? '' : currentPageName), title=language[currentLanguage], itemprop="url")
+                            img(src=translations[language].flag.src, alt="", aria-hidden="true", itemprop="image")
+                            span
+                                = translations[language].label

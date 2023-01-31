@@ -1,0 +1,15 @@
+@use '@keienla/platypass/colors';
+@use '@keienla/platypass/spacers';
+
+.main-header {
+    background-color: colors.get('primary', color1);
+    color: colors.get('primary', color1, true);
+    display: flex;
+    flex-wrap: wrap;
+    padding: var(--body-padding);
+
+    h1 {
+        margin-top: var(--body-padding);
+        width: 100%;
+    }
+}

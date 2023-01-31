@@ -1,20 +1,33 @@
-const { clean, folders, config, mkdir } = require("./utils")
-const { series } = require('gulp')
-const fs = require('fs')
+import config from '../config'
+import { folders, mkdir, clean } from './utils'
+import * as fs from 'fs'
 
-function _cleanManifest() {
+/**
+ * Clean the manifest in dist folder
+ * @returns NodeJS.ReadWriteStream
+ */
+export function cleanManifest(): NodeJS.ReadWriteStream {
     return clean(`${folders.dist.default}/**/manifest.json`)
 }
 
-async function _createManifest() {
+/**
+ * Create the manifest into the dist folder
+ * Create one manifest for each language
+ * @returns Promise<void>
+ */
+export async function generateManifest(next): Promise<void> {
+    if(config.disableManifest) {
+        return next()
+    }
+
     config.languages.forEach(language => {
-        const lang = typeof language.lang === 'string' ? language.lang : language
-        const isDefault = lang === config.defaultLanguage
+        const lang: string = typeof language === 'string' ? language : language.lang
+        const isDefault: boolean = lang === config.defaultLanguage
 
         const manifest = {
             name: config.name[lang],
             short_name: config.shortName ? config.shortName[lang] : config.name[lang],
-            description: config.description[lang],
+            description: config.description?.[lang] || '',
             scope: '/',
             start_url: isDefault ? '.' : `./${lang}`,
             display: config.display || 'browser',
@@ -35,5 +48,3 @@ async function _createManifest() {
         }
     })
 }
-
-module.exports = series(_cleanManifest, _createManifest)

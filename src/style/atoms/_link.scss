@@ -1,0 +1,15 @@
+@use '@keienla/platypass/spacers';
+
+.main-content-link {
+    display: inline-block;
+    left: spacers.get(2);
+    position: fixed;
+    top: spacers.get(2);
+    transform: translateY(calc(-100% - #{spacers.get(2)}));
+    transition: transform 0.4s ease-out;
+
+    &:focus {
+        transform: translateY(0);
+        transition: transform 0.4s ease-in;
+    }
+}

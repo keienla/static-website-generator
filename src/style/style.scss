@@ -1,17 +1,8 @@
-.animate-in {
-    animation: fadeIn .5s ease-in forwards
-}
+@forward 'platypass';
 
-.animate-out {
-    animation: fadeIn .5s ease-out reverse forwards
-}
-
-@keyframes fadeIn {
-    0% {
-        opacity: 0
-    }
-
-    100% {
-        opacity: 1;
-    }
-}
+@forward 'animations';
+@forward 'atoms';
+@forward 'molecules';
+@forward 'organisms';
+@forward 'templates';
+@forward 'pages';

@@ -1,4 +1,4 @@
-import { Languages, Translation } from "./translation.interface";
+import { AdvancedLanguages, Languages, Translation } from "./translation.interface";
 
 export interface Config {
     // The version for the cache system
@@ -7,6 +7,7 @@ export interface Config {
     // #region protocol
     /**
      * If the site is on https or no
+     * If the website is not on https, the service worker cannot be build
      * @type {boolean|undefined}
      */
     "https"?: boolean,
@@ -36,6 +37,36 @@ export interface Config {
     "port"?: number,
     // #endregion
 
+    // #region disable non essential features
+    /**
+     * If set to true, the manifest for each language will not be build
+     * @type {boolean}
+     * @default false
+     */
+    "disableManifest"?: boolean
+
+    /**
+     * If set to true, the service worker will not be build
+     * @type {boolean}
+     * @default false
+     */
+    "disableServiceWorker"?: boolean
+
+    /**
+     * If set to true, the sitemap will not be build
+     * @type {boolean}
+     * @default false
+     */
+    "disableSitemap"?: boolean
+
+    /**
+     * If set to true, the robots will not be build
+     * @type {boolean}
+     * @default false
+     */
+    "disableRobots"?: boolean
+    // #endregion disable non essential features
+
     // #region languages
     /**
      * The default language of the site.
@@ -51,7 +82,7 @@ export interface Config {
      * @example
      *  ["fr", "en-US"]
      */
-    "languages": (Languages | {dir: 'ltr' | 'rtl', lang: Languages})[]
+    "languages": (Languages | AdvancedLanguages)[]
     // #endregion
 
     // #region General

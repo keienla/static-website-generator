@@ -19,18 +19,19 @@ meta(name="referrer", content="strict-origin")
 meta(name="theme-color", content=config.themeColor)
 meta(name="author", content="Thibault Meyer")
 link(rel="icon", href="/assets/img/favicon.ico")
-link(rel="manifest", href="./manifest.json")
+if(!config.disableManifest)
+    link(rel="manifest", href="./manifest.json")
 <!-- #endregion Global -->
 
 <!-- #region Microsoft -->
 meta(http-equiv="X-UA-Compatible", content="ie=edge")
 <!-- #endregion Microsoft -->
 
-script(defer, src="/script/app.ts")
+script(defer, type="module", src="/script/app.ts")
 
 link(type="text/css", rel="preload", as="style", href="/style/style.scss")
 link(type="text/css", rel="stylesheet", href="/style/style.scss")
 
 <!-- To register the service worker file -->
-if(config.https)
+if(config.https && !config.disableServiceWorker)
     script(defer, src="/sw-register.js")

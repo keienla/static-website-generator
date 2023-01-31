@@ -1,6 +1,8 @@
 import { IHomePage } from './../src/interfaces/home.interface';
+import PageCommon from './page-common'
 
 const HomePage: IHomePage = {
+    ...PageCommon,
     "_template": "home",
     "_priority": 1.0,
     "head": {

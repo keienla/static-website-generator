@@ -1,0 +1,8 @@
+@use '@keienla/platypass/spacers';
+
+body {
+    display: flex;
+    flex-direction: column;
+
+    --body-padding: #{spacers.get(8)};
+}

@@ -1,17 +1,22 @@
 include ../components/image.pug
+include ../components/navigation.pug
 <!DOCTYPE html>
 html(lang=language, dir=dir, itemscope, itemtype="https://schema.org/WebPage", prefix="og:http://ogp.me/ns#")
     head
         include ../components/head.pug
-    body.animate-in
-        header
-            h1
-                != page.content.title[language]
-            nav
-        main
-            section
-                //- +image(page.images.nebuleuse)
-        footer
+    body
+        header.main-header
+            a(href="#main-content", class="main-content-link", data-flow-disabled)
+                = page.main_content_link[language]
+            +navigation(page.navigation, isDefaultLanguage, language)
+            +switch-language(languages, language, defaultLanguage, page.language_navigation, currentPageName, currentPageFolder)
+        main(id="main-content", data-flow-container)
+            div(data-flow-view="home")
+                h1
+                    != page.content.title[language]
+                section
+                    //- +image(page.images.nebuleuse)
+        footer.main-footer
             p
-                = page.footer.createdBy[language]
+                = page.footer.createdBy[language] + ' '
                 a(href="https://github.com/keienla", target="_blank") Thibault Meyer

@@ -1,0 +1,31 @@
+@use '@keienla/platypass/modes';
+
+@use '@keienla/platypass/colors' with (
+    $colors: (
+        primary: (
+            color1: #127369,
+            color2: #10403B,
+            color3: #8AA6A3,
+            color4: #4C5958,
+            color5: #BFBFBF,
+            contrast: (
+                color1: #fff,
+                color2: #fff,
+                color3: #000,
+                color4: #fff,
+                color5: #000
+            ),
+        ),
+        background: (
+            body: modes.generate-mode((light: #F5F5F5, dark: #1F1F1F)),
+            card: modes.generate-mode((light: #FFF, dark: #272727)),
+            contrast: (
+                body: modes.generate-mode((light: #000, dark: #fff)),
+                card: modes.generate-mode((light: #000, dark: #fff)),
+            )
+        ),
+    )
+);
+
+@forward '@keienla/platypass/css-vars';
+@forward '@keienla/platypass/style';

@@ -1,20 +1,25 @@
-const { clean, folders, config, mkdir, getPathFiles, getFileName } = require("./utils")
-const { series } = require('gulp')
-const fs = require('fs')
+import { clean, folders, mkdir, getPathFiles, getFileName } from './utils'
+import { parallel } from 'gulp'
+import * as fs from 'fs'
+import config from '../config'
 
 const REGISTER_NAME = 'sw-register.js'
 const SW_NAME = 'sw-default.js'
 
-function _cleanSW() {
+/**
+ * Clean the service worker files from the dist folder
+ * @returns NodeJS.ReadWriteStream
+ */
+export function cleanSW() {
     return clean([
         `${folders.dist.default}/${REGISTER_NAME}`,
         `${folders.dist.default}/${SW_NAME}`
     ])
 }
 
-async function _createSwRegister(next) {
-    if(!config.https) {
-        console.warn('Must be HTTPS to register service worker')
+async function _generateSWRegister(next) {
+    if(!config.https || config.disableServiceWorker) {
+        if(!config.https && !config.disableServiceWorker) console.warn('Must be HTTPS to register service worker')
         return next()
     }
 
@@ -30,18 +35,18 @@ async function _createSwRegister(next) {
     fs.writeFileSync(`${folders.dist.default}/${REGISTER_NAME}`, code)
 }
 
-async function _createSw(next) {
-    if(!config.https) {
-        console.warn('Must be HTTPS to register service worker')
+async function _generateSWCode(next) {
+    if(!config.https || config.disableServiceWorker) {
+        if(!config.https && !config.disableServiceWorker) console.warn('Must be HTTPS to register service worker')
         return next()
     }
 
     mkdir(folders.dist.default)
 
-    const HTML = getPathFiles(folders.dist.default, '.html')
-    const JS = getPathFiles(folders.dist.script, '')
-    const STYLE = getPathFiles(folders.dist.style, '')
-    const ASSETS = getPathFiles(folders.dist.assets, '')
+    const HTML: string[] = getPathFiles(folders.dist.default, '.html')
+    const JS: string[] = getPathFiles(folders.dist.script, '')
+    const STYLE: string[] = getPathFiles(folders.dist.style, '')
+    const ASSETS: string[] = getPathFiles(folders.dist.assets, '')
 
     const FILES = [...HTML, ...JS, ...STYLE, ...ASSETS]
         .filter(file => getFileName(file)?.extension !== 'map' ?? true)
@@ -100,4 +105,4 @@ self?.addEventListener('activate', event => {
     fs.writeFileSync(`${folders.dist.default}/${SW_NAME}`, code)
 }
 
-module.exports = series(_cleanSW, _createSw, _createSwRegister)
+export const generateSW = parallel(_generateSWRegister, _generateSWCode)

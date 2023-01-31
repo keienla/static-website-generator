@@ -1,5 +1,5 @@
-import { IImage } from "./image.interface"
-import { Translation } from "./translation.interface"
+import { IImage } from './image.interface'
+import { Languages, Translation } from './translation.interface'
 
 /**
  * The default interface of a page
@@ -11,7 +11,7 @@ export interface IBasePageArticle {
      * If no template is specified, the page will not be generated
      * @type {string}
      */
-    "_template": string
+    _template: string
 
     /**
      * Tell to search engines approximately how ofter the page is updated
@@ -27,7 +27,7 @@ export interface IBasePageArticle {
      * "yearly" // Contact, “About Us”, login, registration pages
      * "never" // Old news stories, press releases, etc
      */
-    "_changefreq"?: "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never"
+    _changefreq?: 'always' | 'hourly' | 'daily' | 'weekly' | 'monthly' | 'yearly' | 'never'
 
     /**
      * Number between 0 and 1 that indicates how important the page is for the search engines.
@@ -38,48 +38,69 @@ export interface IBasePageArticle {
      * 0.4-0.7 // Articles and blog entries, minor category pages, sub-category pages, FAQs
      * 0.0-0.3 // Outdated news, info that has become irrelevant
      */
-    "_priority"?: number
+    _priority?: number
 
     /**
      * Block the user-agent robots from exploring the page
      * @type {boolean|undefined}
      */
-    "_nofollow"?: boolean
+    _nofollow?: boolean
 
     /**
      * Block the user-agent robots from indexing the page
      * @type {boolean|undefined}
      */
-    "_noindex"?: boolean      // If the robots can index the page
+    _noindex?: boolean // If the robots can index the page
+
+    /**
+     * The text to the link to the content of the page
+     * @type {Translation}
+     */
+    main_content_link: Translation
+
+    /**
+     * The list of the links for navigation in the page
+     * @type {{href: string, label: Translation}[]}
+     */
+    navigation: {
+        href: `/${string}.html` | '/' | `/${string}/`
+        label: Translation
+        targetTemplate?: string
+    }[]
+
+    /**
+     * The list of the languages to switch inside the page
+     */
+    language_navigation: Record<Languages, { label: string; flag: IImage }>
 
     /**
      * General informations of the page.
      * This will used to set the title, description and keywords meta tags
      */
-    "head": {
+    head: {
         /**
          * The title of the page. This is used in the <title> tag
          * @type {Translation}
          */
-        "title": Translation
+        title: Translation
 
         /**
          * The description of the page. This is used in the <meta description> tag
          * @type {Translation}
          */
-        "description": Translation
+        description: Translation
 
         /**
          * The keywords of the page. This is used in the <meta keywords> tag
          * @type {Translation}
          */
-        "keywords": Translation
-    },
+        keywords: Translation
+    }
 
     /**
      * List of images used the page
      * All the images specified here will be referenced is the page is referenced
      * @type {Record<string, IImage>|undefined}
      */
-    "images"?: Record<string, IImage>
+    images?: Record<string, IImage>
 }
