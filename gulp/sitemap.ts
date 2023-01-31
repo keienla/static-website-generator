@@ -28,7 +28,6 @@ export async function generateSitemap(next): Promise<void> {
 
     const followedPages = (await findFollowedNofollowedPages()).followedPages.map(
         ({ url, data, name, src }) => {
-            console.log({ url, data, name, src })
             let response: string = '<url>'
             // Set Url
             response += `<loc>${url}</loc>`
